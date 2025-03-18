@@ -36,6 +36,24 @@ async def run_command(args: argparse.Namespace):
     if args.command == "create-environment":
         return await client.create_environment(name=args.name, region=args.region)
 
+    elif args.command == "get-environment":
+        return await client.get_environment(environment_id=args.environment_id)
+
+    elif args.command == "list-environments":
+        return await client.list_environments(
+            search=args.search,
+            page=args.page,
+            page_size=args.page_size,
+        )
+
+    elif args.command == "update-environment":
+        return await client.update_environment(
+            environment_id=args.environment_id, new_name=args.new_name
+        )
+
+    elif args.command == "delete-environment":
+        return await client.delete_environment(environment_id=args.environment_id)
+
     elif args.command == "create-keypair":
         # Read public key from file or argument
         public_key = args.public_key
@@ -54,6 +72,9 @@ async def run_command(args: argparse.Namespace):
 
     elif args.command == "get-images":
         return await client.get_images()
+
+    elif args.command == "get-gpu-stocks":
+        return await client.get_gpu_stocks()
 
     elif args.command == "create-vm":
         return await client.create_virtual_machine(
@@ -130,6 +151,45 @@ def main():
         help="Region where the environment will be created",
     )
 
+    # Get environment command
+    get_env_parser = subparsers.add_parser(
+        "get-environment", help="Fetch details of a specific environment"
+    )
+    get_env_parser.add_argument(
+        "--environment-id", required=True, help="The ID of the environment to retrieve"
+    )
+
+    # List environments command
+    list_env_parser = subparsers.add_parser(
+        "list-environments", help="Fetch a list of environments"
+    )
+    list_env_parser.add_argument(
+        "--search", help="Search for environments by name, ID, or region"
+    )
+    list_env_parser.add_argument("--page", type=int, help="Page number to retrieve")
+    list_env_parser.add_argument(
+        "--page-size", type=int, help="Number of environments per page"
+    )
+
+    # Update environment command
+    update_env_parser = subparsers.add_parser(
+        "update-environment", help="Update an existing environment"
+    )
+    update_env_parser.add_argument(
+        "--environment-id", required=True, help="The ID of the environment to update"
+    )
+    update_env_parser.add_argument(
+        "--new-name", required=True, help="New name for the environment"
+    )
+
+    # Delete environment command
+    delete_env_parser = subparsers.add_parser(
+        "delete-environment", help="Permanently delete an environment"
+    )
+    delete_env_parser.add_argument(
+        "--environment-id", required=True, help="The ID of the environment to delete"
+    )
+
     # Create keypair command
     keypair_parser = subparsers.add_parser(
         "create-keypair", help="Create a new keypair"
@@ -148,6 +208,12 @@ def main():
 
     # Get images command
     subparsers.add_parser("get-images", help="Fetch available system images")
+
+    # Get GPU stocks command
+    subparsers.add_parser(
+        "get-gpu-stocks",
+        help="Fetch information on current and upcoming GPU availability",
+    )
 
     # Create VM command
     vm_parser = subparsers.add_parser("create-vm", help="Create a new virtual machine")
