@@ -1,7 +1,7 @@
 [project]
 name = "hyperstack"
 version = "0.1.0"
-description = ""
+description = "Command-line interface for Hyperstack API"
 authors = [
     {name = "johanderson@doofinder.com"}
 ]
@@ -9,10 +9,14 @@ license = {text = "MIT"}
 readme = "README.md"
 requires-python = ">=3.8,<3.14"
 dependencies = [
-    "aiosonic (>=0.24.0,<0.25.0)"
+    "aiosonic (>=0.24.0,<0.25.0)",
+    "pydantic (>=2.10.6,<3.0.0)"
 ]
 
+[project.scripts]
+hyperstack = "run:main"
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
 build-backend = "poetry.core.masonry.api"
+
