@@ -253,14 +253,54 @@ class Hyperstack(AioSonicBaseClient):
         """
         return await self.get("/core/flavors")
 
-    async def get_images(self) -> Union[dict, str]:
+    async def get_images(
+        self,
+        region: Optional[str] = None,
+        include_public: Optional[bool] = None,
+        search: Optional[str] = None,
+        page: Optional[int] = None,
+        per_page: Optional[int] = None,
+    ) -> Union[dict, str]:
         """
-        Fetch available system images.
+        Fetch available system images with optional filtering.
+
+        Args:
+            region: Filter images by region name
+            include_public: Whether to include public images (defaults to false if not specified)
+            search: Search for images by name
+            page: Page number to retrieve
+            per_page: Number of images per page
 
         Returns:
-            Response containing the list of available images.
+            Response containing the list of available images matching the criteria
+
+        Raises:
+            ValueError: If page or per_page are negative
         """
-        return await self.get("/core/images")
+        params = {}
+
+        if region is not None:
+            if region.strip():
+                params["region"] = region.strip()
+
+        if include_public is not None:
+            params["include_public"] = include_public
+
+        if search is not None:
+            if search.strip():
+                params["search"] = search.strip()
+
+        if page is not None:
+            if page < 0:
+                raise ValueError("Page number cannot be negative")
+            params["page"] = page
+
+        if per_page is not None:
+            if per_page < 1:
+                raise ValueError("Per page value must be at least 1")
+            params["per_page"] = per_page
+
+        return await self.get("/core/images", params=params)
 
     async def get_gpu_stocks(self) -> Union[dict, str]:
         """
